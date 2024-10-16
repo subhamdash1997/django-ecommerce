@@ -6,7 +6,10 @@ const LoopingComp = ({ product }) => {
   const defaultImage =
     "https://via.placeholder.com/300x200/000000/FFFFFF?text=No+Image"; // Black placeholder image
   return (
-    <Link to={`/product/${product._id}`}>
+    <Link
+      to={`/product/${product._id}`}
+      style={{ textDecoration: "none", color: "inherit" }}
+    >
       <Card
         className="shadow-lg h-100"
         style={{ borderRadius: "10px", overflow: "hidden" }}
