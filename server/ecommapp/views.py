@@ -77,29 +77,28 @@ def register(request):
             username=data['email'],
             email=data['email'],
             password=make_password(data['password']),
-            is_active=False
+            is_active=True
         )
         
         #Generate Token Sent a Email
-        email_subject = "Activate Your Account"
-        message = render_to_string(
-            "activate.html",
-            {
-                "user":user,
-                "domain":"127.0.0.1:8000",
-                "uid": urlsafe_base64_encode(force_bytes(user.pk)),
-                "token": generate_token.make_token(user)
-            }
-        )
-        email_message = EmailMessage(email_subject,message,settings.EMAIL_HOST_USER,[data['email']])
+        # email_subject = "Activate Your Account"
+        # message = render_to_string(
+        #     "activate.html",
+        #     {
+        #         "user":user,
+        #         "domain":"127.0.0.1:8000",
+        #         "uid": urlsafe_base64_encode(force_bytes(user.pk)),
+        #         "token": generate_token.make_token(user)
+        #     }
+        # )
+        # email_message = EmailMessage(email_subject,message,settings.EMAIL_HOST_USER,[data['email']])
         
-        email_message.send()
+        # email_message.send()
         
         serializer = UserSerializer(user,many=False)
         
         return Response(serializer.data)
     except Exception as e:
-        print("-------------------------",e)
         message = {'details':'User is already exists.'}        
         return Response(message,status=status.HTTP_400_BAD_REQUEST)
     
