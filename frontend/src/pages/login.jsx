@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Row,
@@ -8,8 +8,10 @@ import {
   Card,
   Alert,
 } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { BsEnvelope, BsLock } from "react-icons/bs";
+import { useDispatch, useSelector } from "react-redux";
+import { login } from "../redux/actions/userActions"; // Import login action
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -19,6 +21,17 @@ const Login = () => {
 
   const [errors, setErrors] = useState({});
   const { email, password } = formData;
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const userLogin = useSelector((state) => state.userLogin);
+  const { loading, error, userInfo } = userLogin;
+  useEffect(() => {
+    if (userInfo) {
+      navigate("/");
+    }
+  }, [userInfo, navigate]);
 
   // Handle input change and update form data
   const handleInputChange = (e) => {
@@ -42,7 +55,8 @@ const Login = () => {
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
     } else {
-      console.log("Login Successful", formData);
+      // Dispatch login action
+      dispatch(login({ username: email, password }));
       setErrors({});
     }
   };
@@ -53,6 +67,8 @@ const Login = () => {
         <Col xs={12} sm={8} md={6} lg={5}>
           <Card className="p-4 shadow-sm">
             <h2 className="text-center mb-4">Login</h2>
+            {error && <Alert variant="danger">{error}</Alert>}
+            {loading && <Alert variant="info">Loading...</Alert>}
             <Form onSubmit={handleSubmit}>
               <Form.Group controlId="email">
                 <Form.Label>Email</Form.Label>

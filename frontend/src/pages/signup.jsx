@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Container,
   Row,
@@ -7,9 +8,11 @@ import {
   Form,
   Card,
   Alert,
+  Spinner,
 } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import { BsPerson, BsEnvelope, BsLock } from "react-icons/bs"; // Icons
+import { Link, useNavigate } from "react-router-dom";
+import { BsPerson, BsEnvelope, BsLock } from "react-icons/bs";
+import { signup } from "../redux/actions/userActions";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -22,6 +25,18 @@ const Signup = () => {
 
   const [errors, setErrors] = useState({});
   const { firstName, lastName, email, password, confirmPassword } = formData;
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const userSignup = useSelector((state) => state?.userSignup);
+  const { loading, error, userInfo } = userSignup;
+
+  // Redirect if signup is successful
+  useEffect(() => {
+    if (userInfo) {
+      navigate("/login"); 
+    }
+  }, [navigate, userInfo]);
 
   // Handle input change and update form data
   const handleInputChange = (e) => {
@@ -52,7 +67,15 @@ const Signup = () => {
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
     } else {
-      console.log("Form submitted successfully", formData);
+      // Dispatch the signup action
+      dispatch(
+        signup({
+          fname: firstName,
+          lname: lastName,
+          email,
+          password,
+        })
+      );
       setErrors({});
     }
   };
@@ -63,6 +86,7 @@ const Signup = () => {
         <Col xs={12} sm={8} md={6} lg={5}>
           <Card className="p-4 shadow-sm">
             <h3 className="text-center mb-4">Sign Up</h3>
+            {error && <Alert variant="danger">{error}</Alert>}
             <Form onSubmit={handleSubmit}>
               <Form.Group controlId="firstName">
                 <Form.Label>First Name</Form.Label>
@@ -180,7 +204,7 @@ const Signup = () => {
               </Form.Group>
 
               <Button type="submit" className="mt-4 w-100" variant="primary">
-                Sign Up
+                {loading ? <Spinner animation="border" size="sm" /> : "Sign Up"}
               </Button>
             </Form>
 
